@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="edit_message">Enter a message</string>
-    <string name="button_send">Send</string>
+    <string name="app_name">Vocab Slides</string>
+    <string name="main_slice_bottom_bar_title">Slides</string>
+    <string name="profile_bottom_bar_title">Profile</string>
+    <string name="library_bottom_bar_title">Library</string>
+    <string name="action_refresh_slide">Refresh</string>
+    <string name="action_night_mode">Night Mode</string>
 </resources>

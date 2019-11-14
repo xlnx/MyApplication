@@ -23,6 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding { enabled = true }
     sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 }
 
@@ -39,5 +40,9 @@ dependencies {
     implementation 'com.github.varunest:sparkbutton:1.0.6'
     implementation 'androidx.room:room-runtime:2.2.1'
     implementation 'androidx.room:room-ktx:2.2.1'
+    implementation 'com.romandanylyk:pageindicatorview:1.0.3'
+    implementation "com.android.support:appcompat-v7:1.0.2"
+    implementation 'com.github.medyo:fancybuttons:1.9.1'
+    implementation 'me.xdrop:fuzzywuzzy:1.2.0'
     kapt 'androidx.room:room-compiler:2.2.1'
 }

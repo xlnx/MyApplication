@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Context
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 
 @Entity(
     indices = [Index("bucket")]
@@ -9,27 +10,24 @@ import androidx.room.*
 data class Vocab(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val bucket: String,
-    val content: String,
-    val pronounce: String = "",
-    val type: String = "",
-    val definition: String = "",
+    var bucket: String,
+    var content: String,
+    var pronounce: String = "",
+    var type: String = "",
+    var definition: String = "",
     var star: Boolean = false
 )
 
 @Dao
 interface VocabDao {
-    @Query("SELECT * FROM vocab LIMIT :limit")
-    fun select(limit: Int = 2147483647): List<Vocab>
+    @RawQuery
+    fun select(query: SupportSQLiteQuery): List<Vocab>
 
-    @Query("SELECT * FROM vocab WHERE bucket IN (:buckets) LIMIT :limit")
-    fun selectFromBuckets(vararg buckets: String, limit: Int = 2147483647): List<Vocab>
+    @RawQuery
+    fun count(query: SupportSQLiteQuery): Int
 
-    @Query("SELECT * FROM vocab ORDER BY RANDOM() LIMIT :limit")
-    fun selectShuffled(limit: Int = 2147483647): List<Vocab>
-
-    @Query("SELECT * FROM vocab WHERE bucket IN (:buckets) ORDER BY RANDOM() LIMIT :limit")
-    fun selectFromBucketsShuffled(vararg buckets: String, limit: Int = 2147483647): List<Vocab>
+    @Query("SELECT DISTINCT bucket FROM vocab ORDER BY bucket")
+    fun selectBuckets(): List<String>
 
     @Query("DELETE FROM vocab WHERE bucket=:bucket")
     fun dropBucket(bucket: String)
@@ -50,19 +48,4 @@ interface VocabDao {
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vocabDao(): VocabDao
-
-    companion object {
-
-        private lateinit var db: AppDatabase
-        val instance get() = db
-
-        fun connect(context: Context) {
-            db = Room.databaseBuilder(
-                context,
-                AppDatabase::class.java, "app.db"
-            )
-                .allowMainThreadQueries()
-                .build()
-        }
-    }
 }

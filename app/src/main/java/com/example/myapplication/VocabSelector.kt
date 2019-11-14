@@ -1,10 +1,13 @@
 package com.example.myapplication
 
+import androidx.sqlite.db.SimpleSQLiteQuery
+
 class VocabSelector {
 
     private val _buckets = ArrayList<String>()
     private var _shuffle = true
-    private var _limit: Int? = 10
+    private var _limit: Int? = null
+    private var _starred: Boolean = false
 
     fun addBucket(vararg other: String): VocabSelector {
         for (bucket in other) {
@@ -25,50 +28,65 @@ class VocabSelector {
         _limit = num
         return this
     }
-    fun setLimit(): VocabSelector {
-        _limit = null
+    fun setStarred(): VocabSelector {
+        _starred = true
         return this
     }
 
     fun select(): ArrayList<Vocab> {
-        return if (_buckets.isEmpty()) {
-            if (_shuffle) {
-                if (_limit != null) {
-                    AppDatabase.instance.vocabDao().selectShuffled(_limit!!)
-                } else {
-                    AppDatabase.instance.vocabDao().selectShuffled()
-                }
-            } else {
-                if (_limit != null) {
-                    AppDatabase.instance.vocabDao().select(_limit!!)
-                } else {
-                    AppDatabase.instance.vocabDao().select()
-                }
+        var queryStr = "SELECT * ${buildQuery()}"
+        println(queryStr)
+        return GlobalResource.db.vocabDao()
+            .select(SimpleSQLiteQuery(queryStr))
+            .toCollection(ArrayList())
+    }
+
+    fun count(): Int {
+        var queryStr = "SELECT COUNT(*) ${buildQuery()}"
+        println(queryStr)
+        return GlobalResource.db.vocabDao()
+            .count(SimpleSQLiteQuery(queryStr))
+    }
+
+    private fun buildQuery(): String {
+        var queryStr = "FROM vocab "
+        if (_starred || !_buckets.isEmpty()) {
+            queryStr += "WHERE "
+            if (_starred) {
+                queryStr += "star "
             }
-        } else {
-            if (_shuffle) {
-                if (_limit != null) {
-                    AppDatabase.instance.vocabDao().selectFromBucketsShuffled(
-                        *_buckets.toArray(arrayOfNulls<String>(_buckets.size) as Array<String>),
-                        limit=_limit!!
-                    )
-                } else {
-                    AppDatabase.instance.vocabDao().selectFromBucketsShuffled(
-                        *_buckets.toArray(arrayOfNulls<String>(_buckets.size) as Array<String>)
-                    )
-                }
-            } else {
-                if (_limit != null) {
-                    AppDatabase.instance.vocabDao().selectFromBuckets(
-                        *_buckets.toArray(arrayOfNulls<String>(_buckets.size) as Array<String>),
-                        limit=_limit!!
-                    )
-                } else {
-                    AppDatabase.instance.vocabDao().selectFromBuckets(
-                        *_buckets.toArray(arrayOfNulls<String>(_buckets.size) as Array<String>)
-                    )
-                }
+            if (_starred && !_buckets.isEmpty()) {
+                queryStr += "AND "
             }
-        }.toCollection(ArrayList())
+            if (!_buckets.isEmpty()) {
+                queryStr += "bucket in ("
+                var first = true
+                for (bucket in _buckets) {
+                    if (!first) {
+                        queryStr += ", "
+                    }
+                    queryStr += "\"$bucket\""
+                    first = false
+                }
+                queryStr += ") "
+            }
+        }
+        if (_shuffle) {
+            queryStr += "ORDER BY RANDOM() "
+        }
+        if (_limit != null) {
+            queryStr += "LIMIT $_limit"
+        }
+        return queryStr
+    }
+
+    companion object {
+        fun selectByCurrentProfile(): ArrayList<Vocab> {
+            return VocabSelector()
+                .addBucket("N5")
+                .setLimit(10)
+//                .setShuffle()
+                .select()
+        }
     }
 }

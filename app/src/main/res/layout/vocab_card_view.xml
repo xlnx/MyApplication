@@ -1,7 +1,13 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.example.myapplication"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto">
+    
+    <data>
+        <variable
+            name="vocab"
+            type="com.example.myapplication.Vocab" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,9 +22,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="24sp"
-            android:textColor="#000"
+            android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true"
-            android:text="TextView" />
+            android:text="@{vocab.pronounce}" />
 
         <TextView
             android:id="@+id/contentLabel"
@@ -26,9 +32,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="48sp"
-            android:textColor="#000"
+            android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true"
-            android:text="TextView" />
+            android:text="@{vocab.content}" />
 
         <Space
             android:layout_width="match_parent"
@@ -40,9 +46,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="20sp"
-            android:textColor="#000"
+            android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true"
-            android:text="TextView" />
+            android:text="@{vocab.definition}" />
 
         <com.varunest.sparkbutton.SparkButton
             android:id="@+id/starButton"
@@ -52,6 +58,19 @@
             app:sparkbutton_inActiveImage="@drawable/ic_star_off"
             app:sparkbutton_iconSize="32dp" />
 
-    </LinearLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/speakButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:elevation="0dp"
+            android:focusable="true"
+            android:src="@drawable/baseline_volume_up_black_48dp"
+            android:tint="@color/spark_image_tint"
+            app:backgroundTint="@null"
+            app:elevation="0dp"
+            app:fabSize="mini"
+            app:rippleColor="@color/colorPrimaryDark" />
 
-</FrameLayout>
+    </LinearLayout>
+</layout>

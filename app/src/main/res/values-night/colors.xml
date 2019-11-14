@@ -3,7 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="black">#000</color>
-    <color name="activeDot">#777</color>
-    <color name="inactiveDot">#eee</color>
-    <color name="colorAccent">#008577</color>
+    <color name="activeDot">#444</color>
+    <color name="inactiveDot">#111</color>
+<!--    <color name="colorAccent">#D81B60</color>-->
 </resources>
