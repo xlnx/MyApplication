@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import androidx.sqlite.db.SimpleSQLiteQuery
+import org.json.JSONArray
+import org.json.JSONObject
 
 class VocabSelector {
 
@@ -82,11 +84,52 @@ class VocabSelector {
 
     companion object {
         fun selectByCurrentProfile(): ArrayList<Vocab> {
-            return VocabSelector()
-                .addBucket("N5")
-                .setLimit(10)
-//                .setShuffle()
-                .select()
+            val profileId = GlobalResource.prefs.getInt("profile", 0)
+            val profiles = GlobalResource.db.profileDao().selectById(profileId)
+            val profile = JSONArray(profiles[0].profile)
+            val ha = HashMap<String, Int>()
+            var total = 0
+            for (i in 0.until(profile.length())) {
+                val obj = profile.getJSONObject(i)
+                val bucket = obj.getString("bucket")
+                val ratio = obj.getInt("ratio")
+                total += ratio
+                if (ha.containsKey(bucket)) {
+                    ha[bucket] = ha[bucket]!! + ratio
+                } else {
+                    ha[bucket] = ratio
+                }
+            }
+            for (i in 0.until(profile.length())) {
+                val obj = profile.getJSONObject(i)
+                val bucket = obj.getString("bucket")
+                val ratio = obj.getInt("ratio")
+                total += ratio
+                if (ha.containsKey(bucket)) {
+                    ha[bucket] = ha[bucket]!! + ratio
+                } else {
+                    ha[bucket] = ratio
+                }
+            }
+            if (total == 0) {
+                return VocabSelector()
+                    .setLimit(10)
+                    .select()
+            } else {
+                val f = ArrayList<Vocab>()
+                for (e in ha) {
+                    f.addAll(
+                        VocabSelector()
+                            .addBucket(e.key)
+                            .setLimit(e.value)
+                            .select()
+                    )
+                }
+                f.shuffle()
+                val y = ArrayList<Vocab>()
+                f.subList(0, 10).toCollection(y)
+                return y
+            }
         }
     }
 }

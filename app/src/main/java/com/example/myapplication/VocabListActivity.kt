@@ -139,10 +139,4 @@ class VocabListActivity : AppCompatActivity() {
         return true
 
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-
-        MainActivity.libraryFragment.updateBuckets()
-    }
 }

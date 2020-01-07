@@ -42,10 +42,41 @@ interface VocabDao {
     fun delete(vocab: Vocab)
 }
 
+@Entity
+data class Profile(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    var editable: Boolean = true,
+    var profile: String = "[]",
+    var name: String
+)
+
+@Dao
+interface ProfileDao {
+    @Query("SELECT * FROM profile ORDER BY name")
+    fun select(): List<Profile>
+
+    @Query("SELECT * FROM profile WHERE id=:id ORDER BY name")
+    fun selectById(id: Int): List<Profile>
+
+    @Update
+    fun update(profile: Profile)
+
+    @Insert
+    fun insert(profile: Profile)
+
+    @Delete
+    fun delete(profile: Profile)
+
+    @Query("SELECT * FROM profile WHERE NOT editable")
+    fun selectDefault(): List<Profile>
+}
+
 @Database(
-    entities = [Vocab::class],
-    version = 1
+    entities = [Vocab::class, Profile::class],
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vocabDao(): VocabDao
+    abstract fun profileDao(): ProfileDao
 }
